@@ -1,0 +1,42 @@
+.job-navbar {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 10px 0;
+}
+
+.job-navbar .navbar-brand {
+  font-size: 1.5rem;
+  color: #1f2937;
+}
+
+.job-navbar .nav-link {
+  color: #374151 !important;
+  font-weight: 500;
+  margin: 0 8px;
+}
+
+.job-navbar .nav-link:hover {
+  color: #2563eb !important;
+}
+
+.logo-circle {
+  width: 36px;
+  height: 36px;
+  background-color: #2563eb;
+  color: white;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.job-navbar .btn-primary {
+  background-color: #2563eb;
+  border: none;
+}
+
+.job-navbar .btn-outline-primary:hover {
+  background-color: #2563eb;
+  color: white;
+}

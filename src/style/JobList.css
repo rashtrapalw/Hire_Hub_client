@@ -1,0 +1,47 @@
+/* Filter card */
+.filter-card input {
+  height: 45px;
+  border-radius: 10px;
+}
+
+/* Job card */
+.job-card {
+  border: none;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.job-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Job title */
+.job-title {
+  text-decoration: none;
+  color: #212529;
+}
+
+.job-title:hover {
+  color: #0d6efd;
+}
+
+/* Job description */
+.job-desc {
+  font-size: 0.95rem;
+  color: #555;
+  margin-top: 10px;
+}
+
+/* Meta info */
+.job-meta {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .job-meta {
+    font-size: 0.85rem;
+  }
+}
