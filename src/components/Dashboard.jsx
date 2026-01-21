@@ -37,9 +37,13 @@
 // }
 
 
+
+
+
 import React, { useEffect, useState } from 'react'
 import API from '../services/api'
 import { getUser } from '../utils/auth'
+import '../style/Dashboard.css'
 
 export default function Dashboard() {
   const user = getUser()
@@ -66,9 +70,8 @@ export default function Dashboard() {
     try {
       const res = await API.get('/api/jobs')
       const appliedJobs = res.data.filter(j =>
-        j.applicants.some(a =>
-          a.candidate === user.id ||
-          a?.candidate?._id === user.id
+        j.applicants.some(
+          a => a.candidate === user.id || a?.candidate?._id === user.id
         )
       )
       setJobs(appliedJobs)
@@ -77,125 +80,165 @@ export default function Dashboard() {
     }
   }
 
-  // 🔥 NEW: update applicant status
+  // 🔥 Recruiter updates applicant status
   const updateStatus = async (jobId, applicantId, status) => {
     try {
       await API.put(
         `/api/jobs/${jobId}/applicants/${applicantId}/status`,
         { status }
       )
-      loadRecruiter() // refresh recruiter data
+      loadRecruiter()
     } catch (e) {
       console.error(e)
     }
   }
 
   const getStatusClass = (status) => {
-  switch (status) {
-    case 'hired':
-      return 'bg-success'
-    case 'rejected':
-      return 'bg-danger'
-    case 'reviewing':
-      return 'bg-warning text-dark'
-    default:
-      return 'bg-primary'
+    switch (status) {
+      case 'hired':
+        return 'badge-hired'
+      case 'rejected':
+        return 'badge-rejected'
+      case 'reviewing':
+        return 'badge-reviewing'
+      default:
+        return 'badge-applied'
+    }
   }
-}
-  
 
   if (!user) return <p>Loading...</p>
 
   return (
-    <div className="container">
-      <h3>{user.role.toUpperCase()} Dashboard</h3>
+    <div className="dashboard py-4">
+      <div className="container">
+        <div className="row">
 
-      {/* USER INFO */}
-      <div className="card mb-4">
-        <div className="card-body">
-          <h5>{user.name}</h5>
-          <p className="mb-0">{user.email}</p>
-        </div>
-      </div>
-
-      {/* ================= RECRUITER VIEW ================= */}
-      {user.role === 'recruiter' && jobs.map(job => (
-        <div key={job._id} className="card mb-3">
-          <div className="card-body">
-            <h5>{job.title}</h5>
-            <p>{job.company}</p>
-
-            <h6>Applicants</h6>
-            {job.applicants.length ? (
-              <ul className="list-group">
-                {job.applicants.map(a => (
-                  <li
-                    key={a._id}
-                    className="list-group-item d-flex justify-content-between align-items-center"
-                  >
-                    <div>
-                      <strong>{a.candidate?.name}</strong>
-                      <br />
-                      <small>{a.candidate?.email}</small>
-                      <br />
-                      <small>Status: {a.status}</small>
-
-                      {a.resumePath && (
-                        <a
-                          href={a.resumePath}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="btn btn-sm btn-link"
-                        >
-                          Resume
-                        </a>
-                      )}
-                    </div>
-
-                    {/* STATUS DROPDOWN */}
-                    <select
-                      className="form-select form-select-sm w-auto"
-                      value={a.status}
-                      onChange={(e) =>
-                        updateStatus(job._id, a._id, e.target.value)
-                      }
-                    >
-                      <option value="applied">Applied</option>
-                      <option value="reviewing">Reviewing</option>
-                      <option value="hired">Hired</option>
-                      <option value="rejected">Rejected</option>
-                    </select>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No applicants yet</p>
-            )}
-          </div>
-        </div>
-      ))}
-
-      {/* ================= CANDIDATE VIEW ================= */}
-        {user.role === 'candidate' && jobs.map(job => {
-          const myApplication = job.applicants.find(
-            a => a.candidate === user.id || a?.candidate?._id === user.id
-          )
-
-          return (
-            <div key={job._id} className="card mb-2">
-              <div className="card-body">
-                <h5>{job.title}</h5>
-                <p>{job.company}</p>
-
-                {/* STATUS BADGE */}
-                <span className={`badge ${getStatusClass(myApplication?.status)}`}>
-                  {myApplication?.status || 'Applied'}
+          {/* ================= PROFILE PANEL ================= */}
+          <div className="col-md-4 mb-4">
+            <div className="card profile-card shadow-sm">
+              <div className="card-body text-center">
+                <div className="profile-avatar mb-3">
+                  {user.name.charAt(0).toUpperCase()}
+                </div>
+                <h5 className="mb-1">{user.name}</h5>
+                <p className="mb-2">{user.email}</p>
+                <span className="badge bg-dark text-capitalize">
+                  {user.role}
                 </span>
               </div>
             </div>
-          )
-        })}
+          </div>
 
+          {/* ================= MAIN CONTENT ================= */}
+          <div className="col-md-8">
+
+            {/* ================= RECRUITER VIEW ================= */}
+            {user.role === 'recruiter' && (
+              <>
+                <h4 className="section-title">My Posted Jobs</h4>
+
+                {jobs.length === 0 && (
+                  <p className="text-muted">No jobs posted yet</p>
+                )}
+
+                {jobs.map(job => (
+                  <div key={job._id} className="card job-card shadow-sm mb-4">
+                    <div className="card-body">
+
+                      {/* Job Header */}
+                      <div className="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                          <h5 className="mb-0">{job.title}</h5>
+                          <small className="text-muted">{job.company}</small>
+                        </div>
+                        <span className="badge bg-secondary">
+                          {job.applicants.length} Applicants
+                        </span>
+                      </div>
+
+                      {/* Applicants */}
+                      {job.applicants.length ? (
+                        job.applicants.map(a => (
+                          <div key={a._id} className="applicant-item d-flex justify-content-between align-items-center">
+                            <div>
+                              <strong>{a.candidate?.name}</strong>
+                              <br />
+                              <small>{a.candidate?.email}</small>
+                              <br />
+                              <span className={`badge-status ${getStatusClass(a.status)}`}>
+                                {a.status}
+                              </span>
+
+                              {a.resumePath && (
+                                <a
+                                  href={a.resumePath}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="btn btn-sm btn-outline-primary ms-2"
+                                >
+                                  Resume
+                                </a>
+                              )}
+                            </div>
+
+                            <select
+                              className="form-select form-select-sm w-auto"
+                              value={a.status}
+                              onChange={(e) =>
+                                updateStatus(job._id, a._id, e.target.value)
+                              }
+                            >
+                              <option value="applied">Applied</option>
+                              <option value="reviewing">Reviewing</option>
+                              <option value="hired">Hired</option>
+                              <option value="rejected">Rejected</option>
+                            </select>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-muted">No applicants yet</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+
+            {/* ================= CANDIDATE VIEW ================= */}
+            {user.role === 'candidate' && (
+              <>
+                <h4 className="section-title">Applied Jobs</h4>
+
+                {jobs.length === 0 && (
+                  <p className="text-muted">You haven’t applied to any jobs</p>
+                )}
+
+                {jobs.map(job => {
+                  const myApplication = job.applicants.find(
+                    a => a.candidate === user.id || a?.candidate?._id === user.id
+                  )
+
+                  return (
+                    <div key={job._id} className="card job-card shadow-sm mb-3">
+                      <div className="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                          <h5 className="mb-1">{job.title}</h5>
+                          <small className="text-muted">{job.company}</small>
+                        </div>
+
+                        <span className={`badge-status ${getStatusClass(myApplication?.status)}`}>
+                          {myApplication?.status || 'Applied'}
+                        </span>
+                      </div>
+                    </div>
+                  )
+                })}
+              </>
+            )}
+
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
