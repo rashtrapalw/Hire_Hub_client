@@ -42,6 +42,20 @@ import API from '../services/api'
 import '../style/JobList.css'
 
 export default function JobList() {
+
+  // Add this at the top of your file
+    const jobPortals = [
+      { name: 'Naukri', url: 'https://www.naukri.com', logo: '/logos/naukri.png' },
+      { name: 'LinkedIn', url: 'https://www.linkedin.com/jobs', logo: '/logos/linkedin.png' },
+      { name: 'Indeed', url: 'https://www.indeed.com', logo: '/logos/indeed.png' },
+      { name: 'Glassdoor', url: 'https://www.glassdoor.com/Job', logo: '/logos/glassdoor.jpg' },
+      { name: 'Wellfound', url: 'https://wellfound.com', logo: '/logos/wellfound.png' },
+      { name: 'foundit', url: 'https://www.foundit.in', logo: '/logos/foundit.png' },
+      { name: 'shine', url: 'https://www.shine.com', logo: '/logos/shine.jpg' },  
+    ]
+
+
+
   const [jobs, setJobs] = useState([])
   const [filteredJobs, setFilteredJobs] = useState([])
 
@@ -106,42 +120,55 @@ const loadJobs = async () => {
         Find Your Next Job
       </h2>
 
-      {/* Filters */}
-      <div className="card filter-card shadow-sm mb-4">
-        <div className="card-body">
-          <div className="row g-3">
-            <div className="col-md-4">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="🔍 Job title or company"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-              />
-            </div>
-
-            <div className="col-md-4">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="📍 Location"
-                value={location}
-                onChange={e => setLocation(e.target.value)}
-              />
-            </div>
-
-            <div className="col-md-4">
-              <input
-                type="number"
-                className="form-control"
-                placeholder="💰 Minimum salary"
-                value={salary}
-                onChange={e => setSalary(e.target.value)}
-              />
-            </div>
-          </div>
-        </div>
+{/* Filters */}
+<div className="card filter-card shadow-sm mb-4">
+  <div className="card-body py-2">
+    <div className="row g-2">
+      <div className="col-12 col-md-6">
+        <input
+          type="text"
+          className="form-control form-control-sm"
+          placeholder="🔍 Job title or company"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
       </div>
+
+      <div className="col-12 col-md-6">
+        <input
+          type="text"
+          className="form-control form-control-sm"
+          placeholder="📍 Location"
+          value={location}
+          onChange={e => setLocation(e.target.value)}
+        />
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+      {/* Job Portal Logos */}
+<div className="job-portal-bar mb-4 d-flex justify-content-center gap-3 flex-wrap">
+  {jobPortals.map(portal => (
+    <a
+      key={portal.name}
+      href={portal.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="portal-logo"
+      title={`Go to ${portal.name}`}
+    >
+      <img
+        src={portal.logo}
+        alt={portal.name}
+        style={{ width: '60px', height: '60px', objectFit: 'contain', cursor: 'pointer' }}
+      />
+    </a>
+  ))}
+</div>
+
 
       {/* Job List */}
       <div className="row">
